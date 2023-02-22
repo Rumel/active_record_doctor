@@ -22,9 +22,9 @@ module ActiveRecordDoctor
       def message(model:, table:, columns:, problem:)
         case problem
         when :validations
-          "add a unique index on #{table}(#{columns.join(', ')}) - validating uniqueness in the model without an index can lead to duplicates"
+          "add a unique index on #{model.name}(#{columns.join(',')}) - validating uniqueness in the model without an index can lead to duplicates"
         when :has_ones
-          "add a unique index on #{table}(#{columns.first}) - using `has_one` in the #{model.name} model without an index can lead to duplicates"
+          "add a unique index on #{model.name}(#{columns.first}) - using `has_one` in the #{model.name} model without an index can lead to duplicates"
         end
       end
       # rubocop:enable Layout/LineLength
@@ -60,7 +60,7 @@ module ActiveRecordDoctor
             next if config(:ignore_models).include?(has_one.klass.name)
 
             foreign_key = has_one.foreign_key
-            next if ignore_columns.include?(foreign_key.to_s)
+            next if ignore_columns.include?("#{model.name}(#{foreign_key.to_s})")
 
             table_name = has_one.klass.table_name
             next if unique_index?(table_name, [foreign_key])
